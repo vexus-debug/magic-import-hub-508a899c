@@ -1,4 +1,6 @@
-- [x] Download and inspect the GitHub repository safely
-- [x] Import repository source unchanged (excluding private .env)
-- [x] Install repository dependencies
-- [x] Verify the imported preview and report any external setup still needed
+- [x] Import repository as-is and install dependencies
+- [x] Assistant: require sign-in + clinic membership, look up role
+- [x] Assistant: limit actions per role
+- [x] Assistant: ask for missing details, never invent, confirm before saving
+- [ ] Test assistant with a signed-in user in each role (needs a test account per role)
+- [ ] Add assistant actions for eye clinic, lab tests, scans and pharmacy

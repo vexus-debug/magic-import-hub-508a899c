@@ -2396,6 +2396,41 @@ async function executeTool(name: string, args: any, db: any, orgId: string) {
   }
 }
 
+// ==================== ROLE ACCESS ====================
+const COMMON_TOOLS = ["get_messages","send_message","get_notifications","get_user_profile","update_user_profile","get_clinic_chairs"];
+const PATIENT_TOOLS = ["search_patients","register_patient","update_patient","get_patient_history","get_patient_documents","get_patient_images","get_overdue_patients","save_patient_image","get_consent_forms","create_consent_form"];
+const APPT_TOOLS = ["get_todays_appointments","get_appointments_by_date","get_appointment_stats","create_appointment","update_appointment_status","reschedule_appointment","add_walk_in","get_available_slots","get_dentist_schedules"];
+const CLINICAL_TOOLS = ["get_dental_chart","add_dental_chart_entry","create_clinical_note","get_clinical_notes","get_treatments","get_treatment_plans","get_treatment_estimates","get_treatment_materials","get_prescriptions","create_prescription","create_treatment_plan","update_treatment_plan","create_treatment_estimate"];
+const LAB_TOOLS = ["get_lab_cases","create_lab_case","update_lab_case","get_lab_orders","create_lab_order","update_lab_order","get_lab_invoices","create_lab_invoice","update_lab_invoice"];
+const WAITING_TOOLS = ["get_waiting_list","add_to_waiting_list","remove_from_waiting_list"];
+const BILLING_TOOLS = ["get_pending_invoices","create_invoice","record_payment","get_payments","get_payment_plans","create_payment_plan","get_registration_fees","create_registration_fee","get_treatments"];
+const FINANCE_TOOLS = [...BILLING_TOOLS,"get_revenue_summary","get_expenses","log_expense","get_commission_payouts","create_commission_payout","update_commission_payout","get_profitability","get_revenue_allocation_rules","get_revenue_allocation_breakdown","get_purchase_orders","get_suppliers","get_advanced_analytics"];
+const ROLE_TOOLS: Record<string, string[] | "all"> = {
+  owner: "all", admin: "all", manager: "all",
+  dentist: [...PATIENT_TOOLS, ...APPT_TOOLS, ...CLINICAL_TOOLS, ...LAB_TOOLS],
+  hygienist: [...PATIENT_TOOLS, ...APPT_TOOLS, ...CLINICAL_TOOLS],
+  assistant: [...PATIENT_TOOLS, ...APPT_TOOLS, ...CLINICAL_TOOLS],
+  receptionist: [...PATIENT_TOOLS, ...APPT_TOOLS, ...WAITING_TOOLS, ...BILLING_TOOLS],
+  accountant: FINANCE_TOOLS,
+  lab_technician: LAB_TOOLS,
+  lab_assistant: LAB_TOOLS,
+};
+function isToolAllowed(role: string, tool: string) {
+  const allowed = ROLE_TOOLS[role];
+  if (allowed === "all") return true;
+  return COMMON_TOOLS.includes(tool) || (allowed ?? []).includes(tool);
+}
+
+const SAFETY_RULES = `
+
+--- MANDATORY RULES FOR SAVING DATA ---
+- Before any tool that creates, updates, records, sends or saves anything, make sure you have EVERY required detail. If anything is missing, ask the user for it. NEVER invent, guess or use placeholder values (names, IDs, dates, amounts, doses, phone numbers, etc.).
+- Look up IDs with search/list tools instead of guessing them.
+- Then show a short summary of exactly what will be saved and ask: "Shall I go ahead?"
+- Only call the saving tool after the user clearly says yes in a later message. If details change, show the updated summary and ask again.
+- Read-only lookups need no confirmation.
+- Only use the tools provided. If the user asks for something outside their role, politely explain their role does not allow it.`;
+
 // ==================== SERVER ====================
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -2422,7 +2457,29 @@ serve(async (req) => {
       });
     }
 
-    let systemPrompt = SYSTEM_PROMPT;
+    // ---- Sign-in & clinic membership check ----
+    const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+    const { data: userData, error: userErr } = token
+      ? await db.auth.getUser(token)
+      : ({ data: { user: null }, error: null } as any);
+    const user = userData?.user;
+    if (userErr || !user) {
+      return new Response(JSON.stringify({ error: "Please sign in to use the assistant." }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const [{ data: orgRole }, { data: isSuper }] = await Promise.all([
+      db.rpc("get_org_role", { _user_id: user.id, _org_id: orgId }),
+      db.rpc("is_super_admin", { _user_id: user.id }),
+    ]);
+    const role: string | null = orgRole ? String(orgRole) : (isSuper ? "owner" : null);
+    if (!role) {
+      return new Response(JSON.stringify({ error: "You don't have access to this clinic." }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let systemPrompt = SYSTEM_PROMPT + SAFETY_RULES + `\n\nThe signed-in user's role in this clinic is: ${role}.`;
     if (context) {
       systemPrompt += `\n\n--- CURRENT CONTEXT ---\nPage: ${context.page || "unknown"}\n`;
       if (context.data) systemPrompt += `Screen data:\n${JSON.stringify(context.data, null, 2)}\n`;
@@ -2430,7 +2487,7 @@ serve(async (req) => {
     systemPrompt += `\nToday: ${today()}`;
 
     // Convert Gemini tool format to OpenAI tool format
-    const openaiTools = TOOLS[0].function_declarations.map((fd: any) => ({
+    const openaiTools = TOOLS[0].function_declarations.filter((fd: any) => isToolAllowed(role, fd.name)).map((fd: any) => ({
       type: "function" as const,
       function: { name: fd.name, description: fd.description, parameters: fd.parameters },
     }));
@@ -2522,6 +2579,11 @@ serve(async (req) => {
         const fnName = tc.function.name;
         let fnArgs: any = {};
         try { fnArgs = JSON.parse(tc.function.arguments || "{}"); } catch { /* empty */ }
+        if (!isToolAllowed(role, fnName)) {
+          openaiMessages.push({ role: "tool", tool_call_id: tc.id, content: JSON.stringify({ error: `Your role (${role}) is not allowed to use ${fnName}.` }) });
+          continue;
+        }
+        if (fnName === "get_user_profile" || fnName === "update_user_profile") fnArgs.user_id = user.id;
         console.log(`Tool: ${fnName}`, fnArgs);
         try {
           const result = await executeTool(fnName, fnArgs, db, orgId);
