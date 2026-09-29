@@ -216,7 +216,7 @@ const DentalClinics = () => {
                   </div>
                   <div className="space-y-3">
                     {plan.prices.map((tier) => (
-                      <div key={tier.label} className="flex items-center justify-between gap-3 border-t border-primary/10 pt-3 first:border-t-0 first:pt-0">
+                      <div key={tier.label} className={`flex items-center justify-between gap-3 border-t pt-3 first:border-t-0 first:pt-0 ${plan.featured ? "border-primary-foreground/25" : "border-primary/10"}`}>
                         <div>
                           <p className={plan.featured ? "text-sm font-medium" : "text-sm font-medium text-card-foreground"}>{tier.label}</p>
                           <p className={plan.featured ? "text-[11px] opacity-60" : "text-[11px] text-muted-foreground/60"}>{tier.period}</p>
