@@ -207,7 +207,27 @@ const DentalClinics = () => {
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-primary">Getting started</p>
             <h2 className="mb-4 text-3xl font-bold text-card-foreground">Pick your plan. Everything's included.</h2>
             <p className="mx-auto mb-12 max-w-2xl text-muted-foreground">You shouldn't have to pay more just to run your own clinic properly, so we don't lock billing or stock behind a pricier tier. Every plan below carries the full Clinexus feature set. Choose the plan that suits your clinic, then choose how often you want to pay.</p>
-<div className="mx-auto mb-12 grid max-w-4xl gap-8 md:grid-cols-3">{plans.map((plan, i) => <motion.div key={plan.period} initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport} transition={{ delay: i * 0.12, duration: 0.6, ease: EASE }} whileHover={{ y: -6 }} className={plan.featured ? "eye-panel-accent rounded-2xl p-6 md:scale-105" : "rounded-2xl bg-background/50 p-6"}><p className={plan.featured ? "mb-2 text-sm font-bold opacity-70" : "mb-2 text-sm text-muted-foreground"}>{plan.label}</p><div className={plan.featured ? "text-3xl font-bold" : "text-3xl font-bold text-primary"}>{plan.price}<span className="align-top text-base">*</span></div><p className={plan.featured ? "mt-1 text-xs opacity-60" : "mt-1 text-xs text-muted-foreground/60"}>{plan.period}</p></motion.div>)}</div>
+            <div className="mx-auto mb-12 grid max-w-5xl gap-6 text-left md:grid-cols-3">
+              {plans.map((plan, i) => (
+                <motion.div key={plan.name} initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport} transition={{ delay: i * 0.12, duration: 0.6, ease: EASE }} whileHover={{ y: -6 }} className={plan.featured ? "eye-panel-accent rounded-2xl p-6 md:scale-105" : "rounded-2xl bg-background/50 p-6"}>
+                  <div className="mb-5 flex items-center justify-between gap-2">
+                    <p className={plan.featured ? "text-lg font-bold" : "text-lg font-bold text-primary"}>{plan.name}</p>
+                    {plan.featured && <span className="rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">Most popular</span>}
+                  </div>
+                  <div className="space-y-3">
+                    {plan.prices.map((tier) => (
+                      <div key={tier.label} className="flex items-center justify-between gap-3 border-t border-primary/10 pt-3 first:border-t-0 first:pt-0">
+                        <div>
+                          <p className={plan.featured ? "text-sm font-medium" : "text-sm font-medium text-card-foreground"}>{tier.label}</p>
+                          <p className={plan.featured ? "text-[11px] opacity-60" : "text-[11px] text-muted-foreground/60"}>{tier.period}</p>
+                        </div>
+                        <p className={plan.featured ? "text-xl font-bold" : "text-xl font-bold text-primary"}>{tier.price}<span className="align-top text-xs">*</span></p>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
             <div className="mx-auto max-w-2xl text-left"><p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Included at every tier</p><div className="grid gap-4 md:grid-cols-2">{included.map((item) => <div key={item} className="flex items-start gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{item}</span></div>)}</div></div>
             <p className="mx-auto mt-6 max-w-2xl text-left text-xs text-muted-foreground/70">{setupFeeNote}</p>
           </motion.section>
