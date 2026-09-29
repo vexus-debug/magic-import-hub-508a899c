@@ -4,3 +4,5 @@
 - [x] Assistant: ask for missing details, never invent, confirm before saving
 - [ ] Test assistant with a signed-in user in each role (needs a test account per role)
 - [ ] Add assistant actions for eye clinic, lab tests, scans and pharmacy
+- [x] Public dental page: Starter / Smart / Pro pricing tiers
+- [ ] Public eye clinic page: still shows old ₦15,000 / ₦30,000 / ₦60,000 (needs confirmed prices)
