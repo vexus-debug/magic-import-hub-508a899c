@@ -30,7 +30,6 @@ import SiteTutorialClinicType from "./site/pages/TutorialClinicType";
 import SiteTutorialSection from "./site/pages/TutorialSection";
 import SiteTutorialDetail from "./site/pages/TutorialDetail";
 import SiteScrollToTop from "./site/components/ScrollToTop";
-import { MaintenanceGate } from "@/components/MaintenanceGate";
 
 // Dashboard pages
 import DashboardHome from "./pages/dashboard/DashboardHome";
@@ -125,16 +124,6 @@ import AllPrescriptionsPage from "./pages/dashboard/eye/AllPrescriptionsPage";
 
 // Public result lookup
 import PublicResultPage from "./pages/PublicResultPage";
-
-// Marketing pages
-import MarketingOverviewPage from "./pages/dashboard/marketing/MarketingOverviewPage";
-import EmailBlastsPage from "./pages/dashboard/marketing/EmailBlastsPage";
-import SmsBlastsPage from "./pages/dashboard/marketing/SmsBlastsPage";
-import SocialContentPage from "./pages/dashboard/marketing/SocialContentPage";
-import ReviewsReferralsPage from "./pages/dashboard/marketing/ReviewsReferralsPage";
-import PromotionsPage from "./pages/dashboard/marketing/PromotionsPage";
-import RecallReactivationPage from "./pages/dashboard/marketing/RecallReactivationPage";
-import MarketingAnalyticsPage from "./pages/dashboard/marketing/MarketingAnalyticsPage";
 
 // Admin pages
 import AdminOverview from "./pages/admin/AdminOverview";
@@ -319,14 +308,7 @@ const App = () => (
               <Route path="treatment-materials" element={<TreatmentMaterialsPage />} />
               <Route path="analytics" element={<AdvancedAnalyticsPage />} />
               <Route path="shop-management" element={<MainClinicOnly><ShopManagementPage /></MainClinicOnly>} />
-              <Route path="marketing" element={<MaintenanceGate><MarketingOverviewPage /></MaintenanceGate>} />
-              <Route path="marketing/email" element={<MaintenanceGate><EmailBlastsPage /></MaintenanceGate>} />
-              <Route path="marketing/sms" element={<MaintenanceGate><SmsBlastsPage /></MaintenanceGate>} />
-              <Route path="marketing/social" element={<MaintenanceGate><SocialContentPage /></MaintenanceGate>} />
-              <Route path="marketing/reviews" element={<MaintenanceGate><ReviewsReferralsPage /></MaintenanceGate>} />
-              <Route path="marketing/promotions" element={<MaintenanceGate><PromotionsPage /></MaintenanceGate>} />
-              <Route path="marketing/recall" element={<MaintenanceGate><RecallReactivationPage /></MaintenanceGate>} />
-              <Route path="marketing/analytics" element={<MaintenanceGate><MarketingAnalyticsPage /></MaintenanceGate>} />
+              <Route path="marketing/*" element={<Navigate to="../dashboard" replace />} />
               <Route path="lab" element={<LabDashboardPage />} />
               <Route path="lab/cases" element={<LabCasesPage />} />
               <Route path="lab/technicians" element={<LabTechniciansPage />} />

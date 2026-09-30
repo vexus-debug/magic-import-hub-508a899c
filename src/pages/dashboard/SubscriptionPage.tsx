@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import {
   Check, Sparkles, CreditCard, CalendarDays, Users, Stethoscope, Wallet,
-  Megaphone, BarChart3, Package, Shield, MessageSquare, ShieldCheck,
+   BarChart3, Package, Shield, MessageSquare, ShieldCheck,
 } from "lucide-react";
 
 type PlanId = "quarterly" | "biannual" | "annual";
@@ -80,19 +80,6 @@ const featureGroups: { label: string; icon: any; items: string[] }[] = [
       "Expenses tracking",
       "Staff commissions and revenue allocation",
       "Profitability reporting",
-    ],
-  },
-  {
-    label: "Marketing",
-    icon: Megaphone,
-    items: [
-      "Marketing hub with campaign overview",
-      "Email blasts and SMS blasts",
-      "Social content planner",
-      "Reviews & referrals",
-      "Promotions and offers",
-      "Patient recall & reactivation",
-      "Marketing analytics",
     ],
   },
   {
