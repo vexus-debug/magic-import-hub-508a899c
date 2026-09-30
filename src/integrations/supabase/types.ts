@@ -1355,42 +1355,54 @@ export type Database = {
       }
       inventory_transactions: {
         Row: {
+          balance_after: number | null
+          balance_before: number | null
           created_at: string
           created_by: string | null
           id: string
           inventory_id: string
           notes: string | null
           org_id: string
+          other_org_id: string | null
           quantity: number
           reference: string | null
           total_cost: number | null
           transaction_type: string
+          transfer_id: string | null
           unit_cost: number | null
         }
         Insert: {
+          balance_after?: number | null
+          balance_before?: number | null
           created_at?: string
           created_by?: string | null
           id?: string
           inventory_id: string
           notes?: string | null
           org_id: string
+          other_org_id?: string | null
           quantity: number
           reference?: string | null
           total_cost?: number | null
           transaction_type: string
+          transfer_id?: string | null
           unit_cost?: number | null
         }
         Update: {
+          balance_after?: number | null
+          balance_before?: number | null
           created_at?: string
           created_by?: string | null
           id?: string
           inventory_id?: string
           notes?: string | null
           org_id?: string
+          other_org_id?: string | null
           quantity?: number
           reference?: string | null
           total_cost?: number | null
           transaction_type?: string
+          transfer_id?: string | null
           unit_cost?: number | null
         }
         Relationships: [
@@ -1404,6 +1416,13 @@ export type Database = {
           {
             foreignKeyName: "inventory_transactions_org_id_fkey"
             columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_transactions_other_org_id_fkey"
+            columns: ["other_org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -5585,9 +5604,31 @@ export type Database = {
         Args: { _kind: string; _org_id: string; _prefix: string }
         Returns: string
       }
+      record_inventory_movement: {
+        Args: {
+          p_inventory_id: string
+          p_notes?: string
+          p_org_id: string
+          p_quantity: number
+          p_reference?: string
+          p_type: string
+          p_unit_cost?: number
+        }
+        Returns: string
+      }
       seed_lab_allocation_rules: {
         Args: { _org_id: string }
         Returns: undefined
+      }
+      transfer_inventory_stock: {
+        Args: {
+          p_inventory_id: string
+          p_notes?: string
+          p_quantity: number
+          p_source_org_id: string
+          p_target_org_id: string
+        }
+        Returns: string
       }
     }
     Enums: {
