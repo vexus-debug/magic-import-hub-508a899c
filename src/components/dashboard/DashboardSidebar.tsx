@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavLink } from "@/components/NavLink";
 import { useSidebar } from "@/components/ui/sidebar";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LogOut, Building2, Shield, ChevronRight, Lock, GitBranch } from "lucide-react";
+import { LogOut, Building2, Shield, GitBranch } from "lucide-react";
 import { BranchSwitcher } from "@/components/dashboard/BranchSwitcher";
 import { useLocation, useNavigate } from "react-router-dom";
 import clinexusLogoRect from "@/assets/site/clinexus-logo-white.png";
@@ -20,11 +20,6 @@ import { useUnreadMessageCount, useRealtimeMessages } from "@/hooks/useMessages"
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrefetchPage } from "@/lib/prefetchRoutes";
-import { isUnderMaintenance } from "@/components/MaintenanceGate";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 export function DashboardSidebar() {
   const { state, setOpenMobile, isMobile } = useSidebar();
@@ -50,9 +45,6 @@ export function DashboardSidebar() {
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "Staff";
   const initials = displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const [maintenanceOpen, setMaintenanceOpen] = useState(false);
-  const maintenanceLocked = isUnderMaintenance();
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/login");
@@ -60,22 +52,11 @@ export function DashboardSidebar() {
 
   const NavItem = ({ item, fullUrl }: { item: any; fullUrl: string }) => {
     const active = location.pathname === fullUrl;
-    const locked = maintenanceLocked && String(item.path).startsWith("marketing");
     const badge =
       item.path === "messages" && unreadMsgCount > 0 ? unreadMsgCount :
       item.path === "notifications" && unreadCount > 0 ? unreadCount : 0;
 
-    const content = locked ? (
-      <button
-        type="button"
-        onClick={() => setMaintenanceOpen(true)}
-          className="relative flex items-center gap-3 rounded-sm px-3 py-2 text-sm w-full text-left text-sidebar-foreground/40 border-l-2 border-transparent pl-[calc(0.75rem-2px)] hover:bg-sidebar-accent cursor-not-allowed"
-      >
-        <item.icon className="h-4 w-4 shrink-0 text-sidebar-foreground/30" />
-        {!collapsed && <span className="truncate">{item.title}</span>}
-        {!collapsed && <Lock className="ml-auto h-3 w-3 text-sidebar-foreground/30" />}
-      </button>
-    ) : (
+    const content = (
       <NavLink
         to={fullUrl}
         onMouseEnter={() => prefetchPage(String(item.path))}
@@ -141,21 +122,6 @@ export function DashboardSidebar() {
   };
 
   return (
-    <>
-    <AlertDialog open={maintenanceOpen} onOpenChange={setMaintenanceOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Marketing is under maintenance</AlertDialogTitle>
-          <AlertDialogDescription>
-            We're making improvements to the marketing tools. They'll be back online soon.
-            Thanks for your patience.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={() => setMaintenanceOpen(false)}>Got it</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
     <Sidebar
       collapsible="icon"
       className="dashboard-sidebar border-r border-sidebar-border transition-all duration-300"
@@ -320,6 +286,5 @@ export function DashboardSidebar() {
         </div>
       </SidebarFooter>
     </Sidebar>
-    </>
   );
 }
