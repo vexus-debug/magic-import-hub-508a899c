@@ -6,5 +6,5 @@
 - [ ] Add assistant actions for eye clinic, lab tests, scans and pharmacy
 - [x] Public dental page: Starter / Smart / Pro pricing tiers
 - [ ] Public eye clinic page: still shows old ₦15,000 / ₦30,000 / ₦60,000 (needs confirmed prices)
-- [ ] Remove marketing section from all dashboards (keep public site unchanged)
+- [x] Remove marketing section from all dashboards (keep public site unchanged)
 - [ ] Inventory: track stock usage with dates, branch transfers, and downloadable inventory/stock reports

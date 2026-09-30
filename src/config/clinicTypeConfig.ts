@@ -4,7 +4,7 @@ import {
   ClipboardList, DollarSign, Wrench, MessageSquare, Star, Receipt, Shield,
   FileCheck, FolderOpen, Eye, Heart, Baby, Bone, Ear, Wallet, FileText,
   PiggyBank, TrendingUp, Calculator, Clock, CalendarClock, Truck,
-  ShoppingCart, Link2, LineChart, Globe, Megaphone, Mail, CalendarRange, Ticket,
+   ShoppingCart, Link2, LineChart, Globe,
   ScanLine, Pill, FileSearch, Glasses, Contact, Activity, Scissors,
 } from "lucide-react";
 
@@ -93,19 +93,6 @@ const dentalNav: NavGroup[] = [
       { title: "Commissions", path: "commissions", icon: Calculator },
       { title: "Revenue Allocation", path: "revenue-allocation", icon: DollarSign },
       { title: "Profitability", path: "profitability", icon: TrendingUp },
-    ],
-  },
-  {
-    label: "Marketing",
-    items: [
-      { title: "Marketing Hub", path: "marketing", icon: Megaphone },
-      { title: "Email Blasts", path: "marketing/email", icon: Mail },
-      { title: "SMS Blasts", path: "marketing/sms", icon: MessageSquare },
-      { title: "Social Content", path: "marketing/social", icon: CalendarRange },
-      { title: "Reviews & Referrals", path: "marketing/reviews", icon: Star },
-      { title: "Promotions", path: "marketing/promotions", icon: Ticket },
-      { title: "Recall & Reactivation", path: "marketing/recall", icon: Users },
-      { title: "Marketing Analytics", path: "marketing/analytics", icon: TrendingUp },
     ],
   },
   {
